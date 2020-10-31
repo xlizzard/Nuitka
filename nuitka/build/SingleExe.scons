@@ -48,6 +48,14 @@ import subprocess
 
 import SCons  # pylint: disable=import-error
 import SCons.Tool.gcc  # pylint: disable=import-error
+from SCons.Script import (  # pylint: disable=import-error
+    CacheDir,
+    Decider,
+    Default,
+    Environment,
+    File,
+    GetOption,
+)
 
 from nuitka.Tracing import my_print, scons_logger
 
@@ -271,7 +279,7 @@ def printCompilerVersionOutput(*args):
 
 
 # Amount of jobs to use.
-job_count = GetOption("num_jobs")  # pylint: disable=undefined-variable
+job_count = GetOption("num_jobs")
 
 
 def isGccName(cc_name):
@@ -320,7 +328,7 @@ if "CXX" in os.environ:
 
 # Patch the compiler detection.
 
-orig_detect = Environment.Detect  # pylint: disable=undefined-variable
+orig_detect = Environment.Detect
 found_gcc = False
 gcc_version = None
 
@@ -479,7 +487,7 @@ def myDetect(self, progs):
     return result
 
 
-Environment.Detect = myDetect  # pylint: disable=undefined-variable
+Environment.Detect = myDetect
 
 
 def createEnvironment(tools):
@@ -497,7 +505,7 @@ def createEnvironment(tools):
     ):
         args["MSVC_USE_SCRIPT"] = False
 
-    return Environment(  # pylint: disable=undefined-variable
+    return Environment(
         # We want the outside environment to be passed through.
         ENV=os.environ,
         # Extra tools configuration for scons.
@@ -1113,6 +1121,7 @@ def _detectVirtualEnvPrefix():
 
 _detectVirtualEnvPrefix()
 
+
 if win_target:
     # On Windows, the installation layout is relatively fixed.
     python_header_path = os.path.join(python_prefix, "include")
@@ -1156,9 +1165,7 @@ if win_target:
     )
 
     if gcc_mode and static_libpython and os.path.exists(static_lib_filename):
-        env.Append(
-            LIBS=[File(static_lib_filename)]  # pylint: disable=undefined-variable
-        )
+        env.Append(LIBS=[File(static_lib_filename)])
     else:
 
         def addWinLib():
@@ -1191,9 +1198,7 @@ elif not module_mode:
     )
 
     if not module_mode and static_libpython and os.path.exists(static_lib_filename):
-        env.Append(
-            LIBS=[File(static_lib_filename)]  # pylint: disable=undefined-variable
-        )
+        env.Append(LIBS=[File(static_lib_filename)])
     else:
         # Debian and Ubuntu distinguish the system libraries like this.
         if (
@@ -1763,10 +1768,10 @@ if cache_mode:
     if show_scons_mode:
         my_print("Scons: Using scons cache inside build directory.")
 
-    CacheDir(  # pylint: disable=undefined-variable
+    CacheDir(
         os.path.join(source_dir, "cache-" + target_arch + "-" + python_abi_version)
     )
-    Decider("MD5-timestamp")  # pylint: disable=undefined-variable
+    Decider("MD5-timestamp")
 
 
 def _writeSconsReport():
@@ -1791,4 +1796,4 @@ def _writeSconsReport():
 
 _writeSconsReport()
 
-Default(target)  # pylint: disable=undefined-variable
+Default(target)
